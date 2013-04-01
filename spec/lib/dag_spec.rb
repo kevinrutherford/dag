@@ -21,5 +21,53 @@ describe DAG do
     end
   end
 
+  context 'creating an edge' do
+    context 'when valid' do
+      let(:v1) { subject.add_vertex }
+      let(:v2) { subject.add_vertex }
+      let!(:e1) { subject.add_edge(origin: v1, destination: v2) }
+
+      it 'leaves the origin vertex' do
+        v1.outgoing_edges.should == [e1]
+      end
+
+      it 'arrives at the destination vertex' do
+        v2.incoming_edges.should == [e1]
+      end
+
+      it 'adds no other edges' do
+        v1.incoming_edges.should be_empty
+        v2.outgoing_edges.should be_empty
+      end
+    end
+
+    context 'between two different DAGs' do
+      it 'raises an error'
+    end
+
+    context 'when one endpoint is not a vertex' do
+      it 'raises an error'
+    end
+
+    context 'when the edge would cause a cycle to exist' do
+      it 'raises an error'
+    end
+
+    context 'with different keywords' do
+      let(:v1) { subject.add_vertex }
+      let(:v2) { subject.add_vertex }
+      let!(:e1) { subject.add_edge(origin: v1, destination: v2) }
+
+      it 'allows source and sink' do
+        subject.add_edge(source: v1, sink: v2).should == e1
+      end
+
+      it 'allows from and to' do
+        subject.add_edge(from: v1, to: v2).should == e1
+      end
+
+    end
+
+  end
 end
 
