@@ -42,11 +42,36 @@ describe DAG do
     end
 
     context 'between two different DAGs' do
-      it 'raises an error'
+      let(:v1) { subject.add_vertex }
+      let(:v2) { DAG.new.add_vertex }
+
+      it 'raises an error' do
+        expect { subject.add_edge(from: v1, to: v2) }.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'when no start is supplied' do
+      let(:v2) { subject.add_vertex }
+
+      it 'raises an error' do
+        expect { subject.add_edge(to: v2) }.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'when no end is supplied' do
+      let(:v1) { subject.add_vertex }
+
+      it 'raises an error' do
+        expect { subject.add_edge(from: v1) }.to raise_error(ArgumentError)
+      end
     end
 
     context 'when one endpoint is not a vertex' do
-      it 'raises an error'
+      let(:v1) { subject.add_vertex }
+
+      it 'raises an error' do
+        expect { subject.add_edge(from: v1, to: 23) }.to raise_error(ArgumentError)
+      end
     end
 
     context 'when the edge would cause a cycle to exist' do
@@ -66,8 +91,45 @@ describe DAG do
         subject.add_edge(from: v1, to: v2).should == e1
       end
 
+      it 'allows start and end' do
+        subject.add_edge(start: v1, end: v2).should == e1
+      end
+
     end
 
   end
+
+  context 'vertex attributes'
+
+  context 'edge attributes'
+
+end
+
+describe DAG::Vertex do
+  let(:dag) { DAG.new }
+  subject { dag.add_vertex }
+  let(:v1) { dag.add_vertex }
+  let(:v2) { dag.add_vertex }
+
+  context 'with predecessors' do
+    before do
+      dag.add_edge from: v1, to: subject
+      dag.add_edge from: v2, to: subject
+    end
+
+    its(:predecessors) { should =~ [v1, v2] }
+    its(:successors) { should == [] }
+  end
+
+  context 'with successors' do
+    before do
+      dag.add_edge from: subject, to: v1
+      dag.add_edge from: subject, to: v2
+    end
+
+    its(:predecessors) { should == [] }
+    its(:successors) { should =~ [v1, v2] }
+  end
+
 end
 
