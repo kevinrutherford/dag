@@ -22,6 +22,8 @@ class DAG
       origin && Vertex === origin && origin.dag == self
     raise ArgumentError.new('Destination must be a vertex in this DAG') unless
      destination && Vertex === destination && destination.dag == self
+    raise ArgumentError.new('A DAG must not have cycles') if origin == destination
+    raise ArgumentError.new('A DAG must not have cycles') if destination.has_path_to?(origin)
     Edge.new(origin, destination).tap {|e| @edges << e }
   end
 

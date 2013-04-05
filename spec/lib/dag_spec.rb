@@ -22,8 +22,9 @@ describe DAG do
   end
 
   context 'creating an edge' do
+    let(:v1) { subject.add_vertex }
+
     context 'when valid' do
-      let(:v1) { subject.add_vertex }
       let(:v2) { subject.add_vertex }
       let!(:e1) { subject.add_edge(origin: v1, destination: v2) }
 
@@ -39,43 +40,45 @@ describe DAG do
         v1.incoming_edges.should be_empty
         v2.outgoing_edges.should be_empty
       end
-    end
 
-    context 'between two different DAGs' do
-      let(:v1) { subject.add_vertex }
-      let(:v2) { DAG.new.add_vertex }
-
-      it 'raises an error' do
-        expect { subject.add_edge(from: v1, to: v2) }.to raise_error(ArgumentError)
+      it 'allows multiple edges between a pair of vertices' do
+        expect { subject.add_edge(origin: v1, destination: v2) }.to_not raise_error
       end
     end
 
-    context 'when no start is supplied' do
-      let(:v2) { subject.add_vertex }
-
-      it 'raises an error' do
-        expect { subject.add_edge(to: v2) }.to raise_error(ArgumentError)
+    context 'when invalid' do
+      it 'requires an origin vertex' do
+        expect { subject.add_edge(to: v1) }.to raise_error(ArgumentError)
       end
-    end
 
-    context 'when no end is supplied' do
-      let(:v1) { subject.add_vertex }
-
-      it 'raises an error' do
+      it 'requires a destination vertex' do
         expect { subject.add_edge(from: v1) }.to raise_error(ArgumentError)
       end
-    end
 
-    context 'when one endpoint is not a vertex' do
-      let(:v1) { subject.add_vertex }
-
-      it 'raises an error' do
+      it 'requires the endpoints to be vertices' do
         expect { subject.add_edge(from: v1, to: 23) }.to raise_error(ArgumentError)
+        expect { subject.add_edge(from: 45, to: v1) }.to raise_error(ArgumentError)
       end
-    end
 
-    context 'when the edge would cause a cycle to exist' do
-      it 'raises an error'
+      it 'requires the endpoints to be in the same DAG' do
+        v2 = DAG.new.add_vertex
+        expect { subject.add_edge(from: v1, to: v2) }.to raise_error(ArgumentError)
+        expect { subject.add_edge(from: v2, to: v1) }.to raise_error(ArgumentError)
+      end
+
+      it 'rejects an edge that would create a loop' do
+        v2 = subject.add_vertex
+        v3 = subject.add_vertex
+        v4 = subject.add_vertex
+        subject.add_edge from: v1, to: v2
+        subject.add_edge from: v2, to: v3
+        subject.add_edge from: v3, to: v4
+        expect { subject.add_edge from: v4, to: v1 }.to raise_error(ArgumentError)
+      end
+
+      it 'rejects an edge from a vertex to itself' do
+        expect { subject.add_edge from: v1, to: v1 }.to raise_error(ArgumentError)
+      end
     end
 
     context 'with different keywords' do
@@ -83,15 +86,15 @@ describe DAG do
       let(:v2) { subject.add_vertex }
       let!(:e1) { subject.add_edge(origin: v1, destination: v2) }
 
-      it 'allows source and sink' do
+      it 'allows :source and :sink' do
         subject.add_edge(source: v1, sink: v2).should == e1
       end
 
-      it 'allows from and to' do
+      it 'allows :from and :to' do
         subject.add_edge(from: v1, to: v2).should == e1
       end
 
-      it 'allows start and end' do
+      it 'allows :start and :end' do
         subject.add_edge(start: v1, end: v2).should == e1
       end
 
