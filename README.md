@@ -2,6 +2,9 @@
 
 Very simple directed acyclic graphs for Ruby.
 
+[![Code
+Climate](https://codeclimate.com/github/kevinrutherford/dag.png)](https://codeclimate.com/github/kevinrutherford/dag)
+
 ## Installation
 
 Install the gem
