@@ -1,11 +1,14 @@
 class DAG
 
   class Vertex
-    attr_reader :dag
+    attr_reader :dag, :payload
 
-    def initialize(dag)
+    def initialize(dag, payload)
       @dag = dag
+      @payload = payload
     end
+
+    private :initialize
 
     def outgoing_edges
       @dag.edges.select {|e| e.origin == self}
@@ -23,11 +26,34 @@ class DAG
       outgoing_edges.map(&:destination).uniq
     end
 
+    def inspect
+      "DAG::Vertex:#{@payload.inspect}"
+    end
+
+    #
+    # Is there a path from here to +other+ following edges in the DAG?
+    #
+    # @param [DAG::Vertex] another Vertex is the same DAG
+    # @raise [ArgumentError] if +other+ is not a Vertex in the same DAG
+    # @return true iff there is a path following edges within this DAG
+    #
     def has_path_to?(other)
       raise ArgumentError.new('You must supply a vertex in this DAG') unless
         other && Vertex === other && other.dag == self.dag
       successors.include?(other) || successors.any? {|v| v.has_path_to?(other) }
     end
+
+    #
+    # Retrieve a value from the vertex's payload.
+    # This is a shortcut for vertex.payload[key].
+    #
+    # @param key [Object] the payload key
+    # @return the corresponding value from the payload Hash, or nil if not found
+    #
+    def [](key)
+      @payload[key]
+    end
+
   end
 
 end

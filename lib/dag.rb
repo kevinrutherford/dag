@@ -11,8 +11,8 @@ class DAG
     @edges = []
   end
 
-  def add_vertex
-    Vertex.new(self).tap {|v| @vertices << v }
+  def add_vertex(payload = {})
+    Vertex.new(self, payload).tap {|v| @vertices << v }
   end
 
   def add_edge(attrs)

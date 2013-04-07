@@ -102,9 +102,5 @@ describe DAG do
 
   end
 
-  context 'vertex attributes'
-
-  context 'edge attributes'
-
 end
 

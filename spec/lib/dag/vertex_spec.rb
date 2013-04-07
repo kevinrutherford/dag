@@ -3,8 +3,8 @@ require 'spec_helper'
 describe DAG::Vertex do
   let(:dag) { DAG.new }
   subject { dag.add_vertex }
-  let(:v1) { dag.add_vertex }
-  let(:v2) { dag.add_vertex }
+  let(:v1) { dag.add_vertex(name: :v1) }
+  let(:v2) { dag.add_vertex(name: :v2) }
 
   describe 'an instance' do
     it 'cannot have a path to a non-vertex' do
@@ -13,6 +13,25 @@ describe DAG::Vertex do
 
     it 'cannot have a path to a vertex in a different DAG' do
       expect { subject.has_path_to?(DAG.new.add_vertex) }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe 'with a payload' do
+    subject { dag.add_vertex(name: 'Fred', size: 34) }
+
+    it 'allows the payload to be accessed' do
+      subject[:name].should == 'Fred'
+      subject[:size].should == 34
+      subject.payload.should == {name: 'Fred', size: 34}
+    end
+
+    it 'returns nil for missing payload key' do
+      subject[56].should be_nil
+    end
+
+    it 'allows the payload to be changed' do
+      subject.payload[:another] = 'ha'
+      subject[:another].should == 'ha'
     end
   end
 
