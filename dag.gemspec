@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'dag'
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.date        = '2013-04-07'
   s.summary     = 'Directed acyclic graphs'
   s.description = 'Directed acyclic graphs'
