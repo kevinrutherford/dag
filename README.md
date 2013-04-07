@@ -3,6 +3,8 @@
 Very simple directed acyclic graphs for Ruby.
 
 [![Build Status](https://travis-ci.org/kevinrutherford/dag.png)](https://travis-ci.org/kevinrutherford/dag)
+[![Dependency
+Status](https://gemnasium.com/kevinrutherford/dag.png)](https://gemnasium.com/kevinrutherford/dag)
 [![Code
 Climate](https://codeclimate.com/github/kevinrutherford/dag.png)](https://codeclimate.com/github/kevinrutherford/dag)
 
