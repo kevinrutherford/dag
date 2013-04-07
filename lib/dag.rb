@@ -6,13 +6,23 @@ class DAG
 
   attr_reader :vertices, :edges
 
-  def initialize
+  #
+  # Create a new Directed Acyclic Graph
+  #
+  # @param [Hash] options configuration options
+  # @option options [Module] mix this module into any created +Vertex+
+  #
+  def initialize(options = {})
     @vertices = []
     @edges = []
+    @mixin = options[:mixin]
   end
 
   def add_vertex(payload = {})
-    Vertex.new(self, payload).tap {|v| @vertices << v }
+    Vertex.new(self, payload).tap {|v|
+      v.extend(@mixin) if @mixin
+      @vertices << v
+    }
   end
 
   def add_edge(attrs)

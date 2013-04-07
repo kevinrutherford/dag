@@ -3,9 +3,8 @@ require 'spec_helper'
 describe DAG do
 
   context 'when new' do
-    it 'starts with no vertices' do
-      subject.vertices.should be_empty
-    end
+    its(:vertices) { should be_empty }
+    its(:edges) { should be_empty }
   end
 
   context 'with one vertex' do
@@ -18,6 +17,25 @@ describe DAG do
       v = subject.add_vertex
       v.outgoing_edges.should be_empty
       v.incoming_edges.should be_empty
+    end
+  end
+
+  context 'using a mix-in module' do
+    subject { DAG.new(mixin: Thing) }
+    let(:v) { subject.add_vertex(name: 'Fred') }
+
+    module Thing
+      def my_name
+        payload[:name]
+      end
+    end
+
+    it 'mixes the module into evey vertex' do
+      (Thing === v).should be_true
+    end
+
+    it 'allows the module to access the payload' do
+      v.my_name.should == 'Fred'
     end
   end
 
