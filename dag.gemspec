@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'dag'
-  s.version     = '0.0.1'
-  s.date        = '2013-04-05'
+  s.version     = '0.0.2'
+  s.date        = '2013-04-07'
   s.summary     = 'Directed acyclic graphs'
   s.description = 'Directed acyclic graphs'
   s.authors     = ['Kevin Rutherford']
