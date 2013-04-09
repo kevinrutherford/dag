@@ -5,14 +5,25 @@ describe DAG::Vertex do
   subject { dag.add_vertex }
   let(:v1) { dag.add_vertex(name: :v1) }
   let(:v2) { dag.add_vertex(name: :v2) }
+  let(:v3) { dag.add_vertex(name: 'v3') }
 
-  describe 'an instance' do
+  describe '#has_path_to?' do
     it 'cannot have a path to a non-vertex' do
       expect { subject.has_path_to?(23) }.to raise_error(ArgumentError)
     end
 
     it 'cannot have a path to a vertex in a different DAG' do
       expect { subject.has_path_to?(DAG.new.add_vertex) }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '#has_ancestor?' do
+    it 'ancestors must be a vertex' do
+      expect { subject.has_ancestor?(23) }.to raise_error(ArgumentError)
+    end
+
+    it 'ancestors must be in the same DAG' do
+      expect { subject.has_ancestor?(DAG.new.add_vertex) }.to raise_error(ArgumentError)
     end
   end
 
@@ -55,6 +66,12 @@ describe DAG::Vertex do
         subject.predecessors.should == [v1, v2]
       end
     end
+
+    it 'has the correct ancestors' do
+      subject.has_ancestor?(v1).should be_true
+      subject.has_ancestor?(v2).should be_true
+      subject.has_ancestor?(v3).should be_false
+    end
   end
 
   context 'with successors' do
@@ -77,11 +94,14 @@ describe DAG::Vertex do
         subject.successors.should == [v1, v2]
       end
     end
+
+    it 'has no ancestors' do
+      subject.has_ancestor?(v1).should be_false
+      subject.has_ancestor?(v2).should be_false
+    end
   end
 
   context 'in a deep DAG' do
-    let(:v3) { dag.add_vertex }
-
     before do
       dag.add_edge from: subject, to: v1
       dag.add_edge from: v1, to: v2
@@ -93,6 +113,10 @@ describe DAG::Vertex do
 
     it 'has no path to v3' do
       subject.has_path_to?(v3).should be_false
+    end
+
+    it 'recognises that it is an ancestor of v2' do
+      v2.has_ancestor?(subject).should be_true
     end
   end
 

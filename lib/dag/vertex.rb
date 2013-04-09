@@ -43,6 +43,23 @@ class DAG
       successors.include?(other) || successors.any? {|v| v.has_path_to?(other) }
     end
 
+    alias :has_descendent? :has_path_to?
+
+    #
+    # Is there a path from +other+ to here following edges in the DAG?
+    #
+    # @param [DAG::Vertex] another Vertex is the same DAG
+    # @raise [ArgumentError] if +other+ is not a Vertex in the same DAG
+    # @return true iff there is a path following edges within this DAG
+    #
+    def has_ancestor?(other)
+      raise ArgumentError.new('You must supply a vertex in this DAG') unless
+        other && Vertex === other && other.dag == self.dag
+      predecessors.include?(other) || predecessors.any? {|v| v.has_ancestor?(other) }
+    end
+
+    alias :is_reachable_from? :has_ancestor?
+
     #
     # Retrieve a value from the vertex's payload.
     # This is a shortcut for vertex.payload[key].
