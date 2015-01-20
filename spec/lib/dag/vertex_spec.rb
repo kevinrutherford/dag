@@ -118,6 +118,19 @@ describe DAG::Vertex do
     it 'recognises that it is an ancestor of v2' do
       v2.has_ancestor?(subject).should be_true
     end
+
+    it 'is known to all descendants' do
+      v2.ancestors.should == Set.new([v1, subject])
+    end
+
+    it 'knows has no ancestors' do
+      subject.ancestors.should == Set.new()
+    end
+
+    it 'knows has all descendants' do
+      subject.descendants.should == Set.new([v1, v2])
+    end
+
   end
 
 end
