@@ -59,8 +59,17 @@ describe DAG do
         v2.outgoing_edges.should be_empty
       end
 
+      it 'it has no properties' do
+        e1.properties.should be_empty
+      end
+
       it 'allows multiple edges between a pair of vertices' do
         expect { subject.add_edge(origin: v1, destination: v2) }.to_not raise_error
+      end
+
+      it 'can specify properties' do
+        e2 = subject.add_edge(origin: v1, destination: v2, properties: {foo: 'bar'})
+        e2.properties[:foo].should == 'bar'
       end
     end
 
