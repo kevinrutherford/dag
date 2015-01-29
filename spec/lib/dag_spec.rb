@@ -129,5 +129,71 @@ describe DAG do
 
   end
 
+  context 'given a dag' do
+    subject { DAG.new(mixin: Thing) }
+    module Thing
+      def my_name
+        payload[:name]
+      end
+    end
+
+    let(:joe) { subject.add_vertex(name: "joe") }
+    let(:bob) { subject.add_vertex(name: "bob") }
+    let(:jane) { subject.add_vertex(name: "jane") }
+    let!(:e1) { subject.add_edge(origin: joe, destination: bob) }
+    let!(:e2) { subject.add_edge(origin: joe, destination: jane) }
+    let!(:e3) { subject.add_edge(origin: bob, destination: jane) }
+
+    describe '.subgraph' do
+      it 'returns a graph' do
+        subject.subgraph().should be_instance_of(DAG)
+      end
+
+      it 'of joe and his ancestors' do
+        subgraph = subject.subgraph([joe,],[])
+        subgraph.vertices.should have(1).items
+        subgraph.vertices[0].my_name.should == "joe"
+        subgraph.edges.should be_empty
+      end
+
+      it 'of joe and his descendants' do
+        subgraph = subject.subgraph([],[joe,])
+        subgraph.vertices.should have(3).items
+        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["joe","bob","jane"])
+        subgraph.edges.should have(3).items
+      end
+
+      it 'of Jane and her ancestors' do
+        subgraph = subject.subgraph([jane,],[])
+        subgraph.vertices.should have(3).items
+        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["joe","bob","jane"])
+        subgraph.edges.should have(3).items
+      end
+
+      it 'of jane and her descendants' do
+        subgraph = subject.subgraph([],[jane,])
+        subgraph.vertices.should have(1).items
+        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["jane"])
+        subgraph.edges.should have(0).items
+      end
+
+      it 'of bob and his descendants' do
+        subgraph = subject.subgraph([],[bob,])
+        subgraph.vertices.should have(2).items
+        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["bob","jane"])
+        subgraph.edges.should have(1).items
+      end
+
+      it 'there is something incestuous going on here' do
+        subgraph = subject.subgraph([bob,],[bob,])
+        subgraph.vertices.should have(3).items
+        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["bob","jane","joe"])
+        subgraph.edges.should have(2).items
+      end
+
+    end
+
+  end
+
 end
 

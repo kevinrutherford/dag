@@ -38,5 +38,65 @@ class DAG
     Edge.new(origin, destination, properties).tap {|e| @edges << e }
   end
 
+  def subgraph(predecessors_of = [], successors_of = [])
+
+    result = DAG.new({mixin: @mixin})
+    vertex_mapping = {}
+    edge_set = Set.new
+
+    # Get the set of predecessors verticies and add a copy to the result
+    predecessors_set = Set.new
+    predecessors_of.each do |v|
+      raise ArgumentError.new('You must supply a vertex in this DAG') unless
+      v.kind_of?(Vertex) && v.dag == self
+      predecessors_set.add(v)
+      v.ancestors(predecessors_set)
+    end
+
+    predecessors_set.each do |v|
+      vertex_mapping[v] = result.add_vertex(payload=v.payload)
+    end
+
+  # Get the set of successor vertices and add a copy to the result
+    successors_set = Set.new
+    successors_of.each do |v|
+      raise ArgumentError.new('You must supply a vertex in this DAG') unless
+      v.kind_of?(Vertex) && v.dag == self
+      successors_set.add(v)
+      v.descendants(successors_set)
+    end
+
+    successors_set.each do |v|
+      vertex_mapping[v] = result.add_vertex(payload=v.payload) unless vertex_mapping.include? v
+    end
+
+    # add all the edges of the predecessors
+    predecessors_set.each do |destination|
+      destination.incoming_edges.each do |e|
+        unless edge_set.include? e
+          origin = e.origin
+          result.add_edge(
+            from: vertex_mapping[origin],
+            to: vertex_mapping[destination])
+        end
+      end
+    end
+
+    # add all the edges of the successors
+    successors_set.each do |origin|
+      origin.outgoing_edges.each do |e|
+        unless edge_set.include? e
+          destination = e.destination
+          result.add_edge(
+            from: vertex_mapping[origin],
+            to: vertex_mapping[destination])
+        end
+      end
+    end
+
+    return result
+  end
+
+
 end
 
