@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe DAG do
 
-  context 'when new' do
-    its(:vertices) { should be_empty }
-    its(:edges) { should be_empty }
+  it 'when new' do
+    expect(subject.vertices).to be_empty
+    expect(subject.edges).to be_empty
   end
 
   context 'with one vertex' do
@@ -31,7 +31,7 @@ describe DAG do
     end
 
     it 'mixes the module into evey vertex' do
-      (Thing === v).should be_true
+      expect((Thing === v)).to be_truthy
     end
 
     it 'allows the module to access the payload' do
@@ -151,44 +151,39 @@ describe DAG do
 
       it 'of joe and his ancestors' do
         subgraph = subject.subgraph([joe,],[])
-        subgraph.vertices.should have(1).items
+        expect(subgraph.vertices.length).to eq(1)
         subgraph.vertices[0].my_name.should == "joe"
         subgraph.edges.should be_empty
       end
 
       it 'of joe and his descendants' do
         subgraph = subject.subgraph([],[joe,])
-        subgraph.vertices.should have(3).items
         Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["joe","bob","jane"])
-        subgraph.edges.should have(3).items
+        expect(subgraph.edges.length).to eq(3)
       end
 
       it 'of Jane and her ancestors' do
         subgraph = subject.subgraph([jane,],[])
-        subgraph.vertices.should have(3).items
         Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["joe","bob","jane"])
-        subgraph.edges.should have(3).items
+        expect(subgraph.edges.length).to eq(3)
       end
 
       it 'of jane and her descendants' do
         subgraph = subject.subgraph([],[jane,])
-        subgraph.vertices.should have(1).items
         Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["jane"])
-        subgraph.edges.should have(0).items
+        expect(subgraph.edges).to be_empty
       end
 
       it 'of bob and his descendants' do
         subgraph = subject.subgraph([],[bob,])
-        subgraph.vertices.should have(2).items
         Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["bob","jane"])
-        subgraph.edges.should have(1).items
+        expect(subgraph.edges.length).to eq(1)
       end
 
       it 'there is something incestuous going on here' do
         subgraph = subject.subgraph([bob,],[bob,])
-        subgraph.vertices.should have(3).items
         Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["bob","jane","joe"])
-        subgraph.edges.should have(2).items
+        expect(subgraph.edges.length).to eq(2)
       end
 
     end

@@ -2,12 +2,10 @@
 *.rbc
 .bundle
 .config
-coverage
 InstalledFiles
 lib/bundler/man
 pkg
 rdoc
-.rvmrc
 spec/reports
 tags
 test/tmp

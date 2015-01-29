@@ -52,12 +52,17 @@ describe DAG::Vertex do
       dag.add_edge from: v2, to: subject
     end
 
-    its(:predecessors) { should =~ [v1, v2] }
-    its(:successors) { should == [] }
+    it 'has the correct predecessors' do
+      expect(subject.predecessors).to eq([v1, v2])
+    end
+
+    it 'has no successors' do
+      expect(subject.successors).to be_empty
+    end
 
     it 'has no paths to its predecessors' do
-      subject.has_path_to?(v1).should be_false
-      subject.has_path_to?(v2).should be_false
+      expect(subject.has_path_to?(v1)).to be_falsey
+      expect(subject.has_path_to?(v2)).to be_falsey
     end
 
     context 'with multiple paths' do
@@ -68,9 +73,9 @@ describe DAG::Vertex do
     end
 
     it 'has the correct ancestors' do
-      subject.has_ancestor?(v1).should be_true
-      subject.has_ancestor?(v2).should be_true
-      subject.has_ancestor?(v3).should be_false
+      expect(subject.has_ancestor?(v1)).to be_truthy
+      expect(subject.has_ancestor?(v2)).to be_truthy
+      expect(subject.has_ancestor?(v3)).to be_falsey
     end
   end
 
@@ -80,12 +85,17 @@ describe DAG::Vertex do
       dag.add_edge from: subject, to: v2
     end
 
-    its(:predecessors) { should == [] }
-    its(:successors) { should =~ [v1, v2] }
+    it 'has no predecessors' do
+      expect(subject.predecessors).to be_empty
+    end
+
+    it 'has the correct successors' do
+      expect(subject.successors).to eq([v1, v2])
+    end
 
     it 'has paths to its successors' do
-      subject.has_path_to?(v1).should be_true
-      subject.has_path_to?(v2).should be_true
+      expect(subject.has_path_to?(v1)).to be_truthy
+      expect(subject.has_path_to?(v2)).to be_truthy
     end
 
     context 'with multiple paths' do
@@ -96,8 +106,8 @@ describe DAG::Vertex do
     end
 
     it 'has no ancestors' do
-      subject.has_ancestor?(v1).should be_false
-      subject.has_ancestor?(v2).should be_false
+      expect(subject.has_ancestor?(v1)).to be_falsey
+      expect(subject.has_ancestor?(v2)).to be_falsey
     end
   end
 
@@ -108,15 +118,15 @@ describe DAG::Vertex do
     end
 
     it 'has a deep path to v2' do
-      subject.has_path_to?(v2).should be_true
+      expect(subject.has_path_to?(v2)).to be_truthy
     end
 
     it 'has no path to v3' do
-      subject.has_path_to?(v3).should be_false
+      expect(subject.has_path_to?(v3)).to be_falsey
     end
 
     it 'recognises that it is an ancestor of v2' do
-      v2.has_ancestor?(subject).should be_true
+      expect(v2.has_ancestor?(subject)).to be_truthy
     end
 
     it 'is known to all descendants' do

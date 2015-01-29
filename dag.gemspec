@@ -8,9 +8,8 @@ Gem::Specification.new do |s|
   s.email       = 'kevin@rutherford-software.com'
   s.homepage    = 'http://github.com/kevinrutherford/dag'
 
-  s.add_development_dependency 'rake', '~> 10.0.4'
-  s.add_development_dependency 'rspec', '~> 2.12'
-  s.add_development_dependency 'simplecov'
+  s.add_development_dependency 'rake', '~> 10'
+  s.add_development_dependency 'rspec', '~> 3'
 
   s.files          = `git ls-files -- lib spec [A-Z]* .rspec .yardopts`.split("\n")
   s.test_files     = `git ls-files -- spec`.split("\n")
