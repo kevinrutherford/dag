@@ -2,7 +2,7 @@ require_relative 'dag/vertex'
 
 class DAG
 
-  Edge = Struct.new(:origin, :destination)
+  Edge = Struct.new(:origin, :destination, :properties)
 
   attr_reader :vertices, :edges
 
@@ -28,13 +28,14 @@ class DAG
   def add_edge(attrs)
     origin = attrs[:origin] || attrs[:source] || attrs[:from] || attrs[:start]
     destination = attrs[:destination] || attrs[:sink] || attrs[:to] || attrs[:end]
+    properties = attrs[:properties] || {}
     raise ArgumentError.new('Origin must be a vertex in this DAG') unless
       origin && Vertex === origin && origin.dag == self
     raise ArgumentError.new('Destination must be a vertex in this DAG') unless
      destination && Vertex === destination && destination.dag == self
     raise ArgumentError.new('A DAG must not have cycles') if origin == destination
     raise ArgumentError.new('A DAG must not have cycles') if destination.has_path_to?(origin)
-    Edge.new(origin, destination).tap {|e| @edges << e }
+    Edge.new(origin, destination, properties).tap {|e| @edges << e }
   end
 
 end
