@@ -31,18 +31,18 @@ describe DAG::Vertex do
     subject { dag.add_vertex(name: 'Fred', size: 34) }
 
     it 'allows the payload to be accessed' do
-      subject[:name].should == 'Fred'
-      subject[:size].should == 34
-      subject.payload.should == {name: 'Fred', size: 34}
+      expect(subject[:name]).to eq('Fred')
+      expect(subject[:size]).to eq(34)
+      expect(subject.payload).to eq({name: 'Fred', size: 34})
     end
 
     it 'returns nil for missing payload key' do
-      subject[56].should be_nil
+      expect(subject[56]).to be_nil
     end
 
     it 'allows the payload to be changed' do
       subject.payload[:another] = 'ha'
-      subject[:another].should == 'ha'
+      expect(subject[:another]).to eq('ha')
     end
   end
 
@@ -68,7 +68,7 @@ describe DAG::Vertex do
     context 'with multiple paths' do
       it 'lists each predecessor only once' do
         dag.add_edge from: v1, to: subject
-        subject.predecessors.should == [v1, v2]
+        expect(subject.predecessors).to eq([v1, v2])
       end
     end
 
@@ -101,7 +101,7 @@ describe DAG::Vertex do
     context 'with multiple paths' do
       it 'lists each successor only once' do
         dag.add_edge from: subject, to: v1
-        subject.successors.should == [v1, v2]
+        expect(subject.successors).to eq([v1, v2])
       end
     end
 
@@ -130,18 +130,17 @@ describe DAG::Vertex do
     end
 
     it 'is known to all descendants' do
-      v2.ancestors.should == Set.new([v1, subject])
+      expect(v2.ancestors).to eq(Set.new([v1, subject]))
     end
 
     it 'knows has no ancestors' do
-      subject.ancestors.should == Set.new()
+      expect(subject.ancestors).to eq(Set.new())
     end
 
     it 'knows has all descendants' do
-      subject.descendants.should == Set.new([v1, v2])
+      expect(subject.descendants).to eq(Set.new([v1, v2]))
     end
 
   end
 
 end
-

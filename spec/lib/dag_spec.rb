@@ -10,13 +10,13 @@ describe DAG do
   context 'with one vertex' do
     it 'has only that vertex' do
       v = subject.add_vertex
-      subject.vertices.should == [v]
+      expect(subject.vertices).to eq([v])
     end
 
     it 'has no edges' do
       v = subject.add_vertex
-      v.outgoing_edges.should be_empty
-      v.incoming_edges.should be_empty
+      expect(v.outgoing_edges).to be_empty
+      expect(v.incoming_edges).to be_empty
     end
   end
 
@@ -35,7 +35,7 @@ describe DAG do
     end
 
     it 'allows the module to access the payload' do
-      v.my_name.should == 'Fred'
+      expect(v.my_name).to eq('Fred')
     end
   end
 
@@ -47,20 +47,20 @@ describe DAG do
       let!(:e1) { subject.add_edge(origin: v1, destination: v2) }
 
       it 'leaves the origin vertex' do
-        v1.outgoing_edges.should == [e1]
+        expect(v1.outgoing_edges).to eq([e1])
       end
 
       it 'arrives at the destination vertex' do
-        v2.incoming_edges.should == [e1]
+        expect(v2.incoming_edges).to eq([e1])
       end
 
       it 'adds no other edges' do
-        v1.incoming_edges.should be_empty
-        v2.outgoing_edges.should be_empty
+        expect(v1.incoming_edges).to be_empty
+        expect(v2.outgoing_edges).to be_empty
       end
 
       it 'it has no properties' do
-        e1.properties.should be_empty
+        expect(e1.properties).to be_empty
       end
 
       it 'allows multiple edges between a pair of vertices' do
@@ -69,7 +69,7 @@ describe DAG do
 
       it 'can specify properties' do
         e2 = subject.add_edge(origin: v1, destination: v2, properties: {foo: 'bar'})
-        e2.properties[:foo].should == 'bar'
+        expect(e2.properties[:foo]).to eq('bar')
       end
     end
 
@@ -114,15 +114,15 @@ describe DAG do
       let!(:e1) { subject.add_edge(origin: v1, destination: v2) }
 
       it 'allows :source and :sink' do
-        subject.add_edge(source: v1, sink: v2).should == e1
+        expect(subject.add_edge(source: v1, sink: v2)).to eq(e1)
       end
 
       it 'allows :from and :to' do
-        subject.add_edge(from: v1, to: v2).should == e1
+        expect(subject.add_edge(from: v1, to: v2)).to eq(e1)
       end
 
       it 'allows :start and :end' do
-        subject.add_edge(start: v1, end: v2).should == e1
+        expect(subject.add_edge(start: v1, end: v2)).to eq(e1)
       end
 
     end
@@ -146,43 +146,43 @@ describe DAG do
 
     describe '.subgraph' do
       it 'returns a graph' do
-        subject.subgraph().should be_instance_of(DAG)
+        expect(subject.subgraph()).to be_an_instance_of(DAG)
       end
 
       it 'of joe and his ancestors' do
         subgraph = subject.subgraph([joe,],[])
         expect(subgraph.vertices.length).to eq(1)
-        subgraph.vertices[0].my_name.should == "joe"
-        subgraph.edges.should be_empty
+        expect(subgraph.vertices[0].my_name).to eq("joe")
+        expect(subgraph.edges).to be_empty
       end
 
       it 'of joe and his descendants' do
         subgraph = subject.subgraph([],[joe,])
-        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["joe","bob","jane"])
+        expect(Set.new(subgraph.vertices.map(&:my_name))).to eq(Set.new(["joe","bob","jane"]))
         expect(subgraph.edges.length).to eq(3)
       end
 
       it 'of Jane and her ancestors' do
         subgraph = subject.subgraph([jane,],[])
-        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["joe","bob","jane"])
+        expect(Set.new(subgraph.vertices.map(&:my_name))).to eq(Set.new(["joe","bob","jane"]))
         expect(subgraph.edges.length).to eq(3)
       end
 
       it 'of jane and her descendants' do
         subgraph = subject.subgraph([],[jane,])
-        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["jane"])
+        expect(Set.new(subgraph.vertices.map(&:my_name))).to eq(Set.new(["jane"]))
         expect(subgraph.edges).to be_empty
       end
 
       it 'of bob and his descendants' do
         subgraph = subject.subgraph([],[bob,])
-        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["bob","jane"])
+        expect(Set.new(subgraph.vertices.map(&:my_name))).to eq(Set.new(["bob","jane"]))
         expect(subgraph.edges.length).to eq(1)
       end
 
       it 'there is something incestuous going on here' do
         subgraph = subject.subgraph([bob,],[bob,])
-        Set.new(subgraph.vertices.map(&:my_name)).should == Set.new(["bob","jane","joe"])
+        expect(Set.new(subgraph.vertices.map(&:my_name))).to eq(Set.new(["bob","jane","joe"]))
         expect(subgraph.edges.length).to eq(2)
       end
 
@@ -191,4 +191,3 @@ describe DAG do
   end
 
 end
-
