@@ -71,6 +71,26 @@ class DAG
       @payload[key]
     end
 
+    def ancestors(result_set = Set.new)
+      predecessors.each do |v|
+        unless result_set.include? v
+          result_set.add(v)
+          v.ancestors(result_set)
+        end
+      end
+      return result_set
+    end
+
+    def descendants(result_set = Set.new)
+      successors.each do |v|
+        unless result_set.include? v
+          result_set.add(v)
+          v.descendants(result_set)
+        end
+      end
+      return result_set
+    end
+
   end
 
 end
