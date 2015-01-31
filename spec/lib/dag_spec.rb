@@ -140,7 +140,7 @@ describe DAG do
     let(:joe) { subject.add_vertex(name: "joe") }
     let(:bob) { subject.add_vertex(name: "bob") }
     let(:jane) { subject.add_vertex(name: "jane") }
-    let!(:e1) { subject.add_edge(origin: joe, destination: bob) }
+    let!(:e1) { subject.add_edge(origin: joe, destination: bob, properties: {name: "father of"} ) }
     let!(:e2) { subject.add_edge(origin: joe, destination: jane) }
     let!(:e3) { subject.add_edge(origin: bob, destination: jane) }
 
@@ -184,6 +184,8 @@ describe DAG do
         subgraph = subject.subgraph([bob,],[bob,])
         expect(Set.new(subgraph.vertices.map(&:my_name))).to eq(Set.new(["bob","jane","joe"]))
         expect(subgraph.edges.length).to eq(2)
+        expect(subgraph.edges[0].properties).to eq({name: "father of"})
+        expect(subgraph.edges[1].properties).to eq({})
       end
 
     end
