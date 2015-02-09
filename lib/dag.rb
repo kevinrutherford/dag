@@ -30,9 +30,9 @@ class DAG
     destination = attrs[:destination] || attrs[:sink] || attrs[:to] || attrs[:end]
     properties = attrs[:properties] || {}
     raise ArgumentError.new('Origin must be a vertex in this DAG') unless
-      origin && Vertex === origin && origin.dag == self
+      is_my_vertex?(origin)
     raise ArgumentError.new('Destination must be a vertex in this DAG') unless
-     destination && Vertex === destination && destination.dag == self
+      is_my_vertex?(destination)
     raise ArgumentError.new('A DAG must not have cycles') if origin == destination
     raise ArgumentError.new('A DAG must not have cycles') if destination.has_path_to?(origin)
     Edge.new(origin, destination, properties).tap {|e| @edges << e }
@@ -40,63 +40,55 @@ class DAG
 
   def subgraph(predecessors_of = [], successors_of = [])
 
+
+    (predecessors_of + successors_of).each { |v|
+      raise ArgumentError.new('You must supply a vertex in this DAG') unless
+        is_my_vertex?(v)
+      }
+
     result = DAG.new({mixin: @mixin})
     vertex_mapping = {}
-    edge_set = Set.new
 
     # Get the set of predecessors verticies and add a copy to the result
-    predecessors_set = Set.new
-    predecessors_of.each do |v|
-      raise ArgumentError.new('You must supply a vertex in this DAG') unless
-      v.kind_of?(Vertex) && v.dag == self
-      predecessors_set.add(v)
-      v.ancestors(predecessors_set)
-    end
+    predecessors_set = Set.new(predecessors_of)
+    predecessors_of.each { |v| v.ancestors(predecessors_set) }
 
     predecessors_set.each do |v|
       vertex_mapping[v] = result.add_vertex(payload=v.payload)
     end
 
-  # Get the set of successor vertices and add a copy to the result
-    successors_set = Set.new
-    successors_of.each do |v|
-      raise ArgumentError.new('You must supply a vertex in this DAG') unless
-      v.kind_of?(Vertex) && v.dag == self
-      successors_set.add(v)
-      v.descendants(successors_set)
-    end
+    # Get the set of successor vertices and add a copy to the result
+    successors_set = Set.new(successors_of)
+    successors_of.each { |v| v.descendants(successors_set) }
 
     successors_set.each do |v|
       vertex_mapping[v] = result.add_vertex(payload=v.payload) unless vertex_mapping.include? v
     end
 
-    # add all the edges of the predecessors
-    predecessors_set.each do |destination|
-      destination.incoming_edges.each do |e|
-        unless edge_set.include? e
-          origin = e.origin
-          result.add_edge(
-            from: vertex_mapping[origin],
-            to: vertex_mapping[destination])
-        end
-      end
-    end
+    # get the unique edges
+    edge_set = (
+      predecessors_set.flat_map(&:incoming_edges) +
+      successors_set.flat_map(&:outgoing_edges)
+    ).uniq
 
-    # add all the edges of the successors
-    successors_set.each do |origin|
-      origin.outgoing_edges.each do |e|
-        unless edge_set.include? e
-          destination = e.destination
-          result.add_edge(
-            from: vertex_mapping[origin],
-            to: vertex_mapping[destination])
-        end
-      end
+    # Add them to the result via the vertex mapping
+    edge_set.each do |e|
+      result.add_edge(
+        from: vertex_mapping[e.origin],
+        to: vertex_mapping[e.destination],
+        properties: e.properties)
     end
 
     return result
   end
 
+  private
+
+  def is_my_vertex?(v)
+    #puts "Kind of: #{v.class}"
+    #puts "Verts dag is self #{v.dag == self}"
+    v.kind_of?(Vertex) and v.dag == self
+  end
 
 end
 
