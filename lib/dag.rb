@@ -85,8 +85,6 @@ class DAG
   private
 
   def is_my_vertex?(v)
-    #puts "Kind of: #{v.class}"
-    #puts "Verts dag is self #{v.dag == self}"
     v.kind_of?(Vertex) and v.dag == self
   end
 
