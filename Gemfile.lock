@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dag (0.0.5)
+    dag (0.0.6)
 
 GEM
   remote: https://rubygems.org/
