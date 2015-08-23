@@ -46,7 +46,7 @@ class DAG
         is_my_vertex?(v)
       }
 
-    result = DAG.new({mixin: @mixin})
+    result = self.class.new({mixin: @mixin})
     vertex_mapping = {}
 
     # Get the set of predecessors verticies and add a copy to the result
