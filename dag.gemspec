@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'dag'
-  s.version     = '0.0.6'
-  s.date        = '2015-02-25'
+  s.version     = '0.0.7'
+  s.date        = '2015-08-27'
   s.license     = 'MIT'
   s.summary     = 'Directed acyclic graphs'
   s.description = 'A very simple library for working with directed acyclic graphs'
@@ -15,6 +15,4 @@ Gem::Specification.new do |s|
   s.files          = `git ls-files -- lib spec [A-Z]* .rspec .yardopts`.split("\n")
   s.test_files     = `git ls-files -- spec`.split("\n")
   s.require_path   = 'lib'
-
 end
-
