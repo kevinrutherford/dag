@@ -43,7 +43,7 @@ class DAG
       successors.include?(other) || successors.any? {|v| v.has_path_to?(other) }
     end
 
-    alias :has_descendent? :has_path_to?
+    alias :has_descendant? :has_path_to?
 
     #
     # Is there a path from +other+ to here following edges in the DAG?
