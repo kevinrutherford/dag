@@ -1,3 +1,5 @@
+require 'set'
+
 class DAG
 
   class Vertex
@@ -99,4 +101,3 @@ class DAG
   end
 
 end
-
