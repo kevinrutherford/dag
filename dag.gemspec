@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'dag'
   s.version     = '0.0.8'
-  s.date        = '2015-08-27'
+  s.date        = '2016-08-01'
   s.license     = 'MIT'
   s.summary     = 'Directed acyclic graphs'
   s.description = 'A very simple library for working with directed acyclic graphs'
