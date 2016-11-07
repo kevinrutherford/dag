@@ -44,6 +44,7 @@ class DAG
     end
 
     alias :has_descendant? :has_path_to?
+    alias :has_descendent? :has_path_to? # for backwards compat
 
     #
     # Is there a path from +other+ to here following edges in the DAG?
